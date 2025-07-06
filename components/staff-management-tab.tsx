@@ -4,6 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "./ui/badge"
 import { Button } from "@/components/ui/button"
 import { Plus, Edit, Trash2 } from "lucide-react"
+import { useRef, useState } from "react"
+import gsap from "gsap"
+import AddStaffForm from "./utils/AddStaffForm"
 
 export function StaffManagementTab() {
   const staffMembers = [
@@ -14,6 +17,36 @@ export function StaffManagementTab() {
     { id: 5, name: "Jude Rice", shift: "2:00 PM-10 PM", status: "On Duty", phone: "+91 1234567890" },
   ]
 
+  const [showForm, setShowForm] = useState(false)
+  const formRef = useRef<HTMLDivElement>(null)
+
+  const handleAddStaffClick = () => {
+    setShowForm(true)
+    setTimeout(() => {
+      if (formRef.current) {
+        gsap.fromTo(
+          formRef.current,
+          { y: 100, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }
+        )
+      }
+    }, 10)
+  }
+
+  const handleCloseForm = () => {
+    if (formRef.current) {
+      gsap.to(formRef.current, {
+        y: 100,
+        opacity: 0,
+        duration: 0.4,
+        ease: "power3.in",
+        onComplete: () => setShowForm(false),
+      })
+    } else {
+      setShowForm(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -21,12 +54,14 @@ export function StaffManagementTab() {
           <h2 className="text-2xl font-bold">Staff Management</h2>
           <p className="text-gray-600">Manage your parking staff and their schedules</p>
         </div>
-        <Button className="flex items-center gap-2">
+        <Button className="flex items-center gap-2" onClick={handleAddStaffClick}>
           <Plus className="h-4 w-4" />
           Add Staff Member
         </Button>
       </div>
-
+      {showForm && (
+        <AddStaffForm ref={formRef} onClose={handleCloseForm} />
+      )}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="pt-6">
